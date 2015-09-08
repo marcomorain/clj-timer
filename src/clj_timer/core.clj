@@ -1,20 +1,22 @@
 (ns clj-timer.core)
 
-(def clock (fn [] (System/nanoTime)))
+(def clock
+  "Expose the underlying timer to allow tests to mock it."
+  (fn [] (System/nanoTime)))
 
-(defn- base [elapsed]
+(defn- timer [elapsed]
   (let [start (clock)]
     (fn []
       (+ elapsed (- (clock) start)))))
 
-(defn timer
+(defn start
   "Start a timer and return a function that returns the current elapsed time"
   []
-  (base 0))
+  (timer 0))
 
 (defn pause
   "Pause a running timer and return a function that resumes the timer"
-  [timer]
-  (let [elapsed (timer)]
+  [t]
+  (let [elapsed (t)]
     (fn []
-      (base elapsed))))
+      (timer elapsed))))
